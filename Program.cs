@@ -14,9 +14,16 @@ namespace WebAPIClient
             // NOTE: ProcessRepositories().Result will block until complete.
             var repositories = ProcessRepositories().Result;
 
-            // Dump the names of the repositories.
+            // Dump the info for each repository.
             foreach (var repo in repositories)
+            {
                 Console.WriteLine(repo.Name);
+                Console.WriteLine(repo.Description);
+                Console.WriteLine(repo.GitHubHomeUrl);
+                Console.WriteLine(repo.Homepage);
+                Console.WriteLine(repo.Watchers);
+                Console.WriteLine();
+            }
         }
 
         private static async Task<List<Repository>> ProcessRepositories()
