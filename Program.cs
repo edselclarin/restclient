@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.Serialization.Json;
-using System.Threading.Tasks;
+using System.Collections.Generic; // List
+using System.Net.Http; // HttpClient
+using System.Net.Http.Headers; // MediaTypeWithQualityHeaderValue
+using System.Runtime.Serialization.Json; // DataContractJsonSerializer
+using System.Threading.Tasks; // Task
 
 namespace WebAPIClient
 {
@@ -11,13 +11,15 @@ namespace WebAPIClient
     {
         static void Main(string[] args)
         {
-            // NOTE: ProcessRepositories() returns immediately and will cause
-            // Main(...) to exit also.  Append .Wait() so that 
-            // ProcessRepositories() blocks until complete.
-            ProcessRepositories().Wait();
+            // NOTE: ProcessRepositories().Result will block until complete.
+            var repositories = ProcessRepositories().Result;
+
+            // Dump the names of the repositories.
+            foreach (var repo in repositories)
+                Console.WriteLine(repo.Name);
         }
 
-        private static async Task ProcessRepositories()
+        private static async Task<List<Repository>> ProcessRepositories()
         {
             var client = new HttpClient();
 
@@ -35,15 +37,13 @@ namespace WebAPIClient
 
             // Make the web request, and deserialize the response into a list 
             // of respositories.
-            var serializer = new DataContractJsonSerializer(typeof(List<repo>));
+            var serializer = new DataContractJsonSerializer(typeof(List<Repository>));
             var streamTask = client.GetStreamAsync(
                 "https://api.github.com/orgs/dotnet/repos");
             var repositories = serializer.ReadObject(await streamTask) 
-                as List<repo>;
+                as List<Repository>;
 
-            // Dump the names of the repositories.
-            foreach (var repo in repositories)
-                Console.WriteLine(repo.name);
+            return repositories;
         }
     }
 }
