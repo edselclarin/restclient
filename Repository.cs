@@ -1,4 +1,5 @@
 using System;
+using System.Globalization; // CultureInfo
 using System.Runtime.Serialization; // DataContract
 
 namespace WebAPIClient
@@ -28,5 +29,23 @@ namespace WebAPIClient
 
         [DataMember(Name="watchers")]
         public int Watchers { get; set; }
+
+        [DataMember(Name="pushed_at")]
+        private string JsonDate { get; set; }
+
+        // IgnoreDataMember instructs the serializer that this type should not
+        // be read to or written from any JSON object.
+        [IgnoreDataMember]
+        public DateTime LastPush
+        {
+            get 
+            {
+                return DateTime.ParseExact(
+                    JsonDate, "yyyy-MM-ddTHH:mm:ssZ", 
+                    CultureInfo.InvariantCulture);
+            }
+
+            // No set accessor, means read-only property.
+        }
     }
 }

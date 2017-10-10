@@ -22,6 +22,7 @@ namespace WebAPIClient
                 Console.WriteLine(repo.GitHubHomeUrl);
                 Console.WriteLine(repo.Homepage);
                 Console.WriteLine(repo.Watchers);
+                Console.WriteLine(repo.LastPush);
                 Console.WriteLine();
             }
         }
@@ -44,7 +45,8 @@ namespace WebAPIClient
 
             // Make the web request, and deserialize the response into a list 
             // of respositories.
-            var serializer = new DataContractJsonSerializer(typeof(List<Repository>));
+            var serializer = new DataContractJsonSerializer(
+                typeof(List<Repository>));
             var streamTask = client.GetStreamAsync(
                 "https://api.github.com/orgs/dotnet/repos");
             var repositories = serializer.ReadObject(await streamTask) 
