@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 
-namespace restclient
+namespace WebAPIClient
 {
     class Program
     {
@@ -31,13 +33,17 @@ namespace restclient
             client.DefaultRequestHeaders.Add(
                 "User-Agent", ".NET Foundation Repository Reporter");
 
-            // Make the web request.
-            var stringTask = client.GetStringAsync(
+            // Make the web request, and deserialize the response into a list 
+            // of respositories.
+            var serializer = new DataContractJsonSerializer(typeof(List<repo>));
+            var streamTask = client.GetStreamAsync(
                 "https://api.github.com/orgs/dotnet/repos");
+            var repositories = serializer.ReadObject(await streamTask) 
+                as List<repo>;
 
-            // Dump HTTP response.
-            var msg = await stringTask;
-            Console.Write(msg);
+            // Dump the names of the repositories.
+            foreach (var repo in repositories)
+                Console.WriteLine(repo.name);
         }
     }
 }
